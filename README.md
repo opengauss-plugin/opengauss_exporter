@@ -57,16 +57,16 @@ Running using ~/.opengauss.cnf:
 
 # 4.效果预览（Grafana仪表盘示例）
 ## 4.1 添加DataSource
-![1](https://raw.githubusercontent.com/opengauss_plugin/opengauss_exporter/master/showcase/1og.png)
+![1](http://106.12.254.207/og/1og.png)
 
 ## 4.2 查看DataSource
-![2](https://raw.githubusercontent.com/opengauss_plugin/opengauss_exporter/master/showcase/2og.png)
+![2](http://106.12.254.207/og/2og.png)
 
 ## 4.3 创建DashBoard
-![3](https://raw.githubusercontent.com/opengauss_plugin/opengauss_exporter/master/showcase/3og.png)
+![3](http://106.12.254.207/og/3og.png)
 
 ## 4.4 展示DashBoard
-![4](https://raw.githubusercontent.com/opengauss_plugin/opengauss_exporter/master/showcase/4og.png)
+![4](http://106.12.254.207/og/4og.png)
 
 # 5.Contributor
 
