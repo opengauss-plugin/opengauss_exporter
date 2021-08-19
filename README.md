@@ -236,7 +236,7 @@ og_stat_activity_max_tx_duration{datname="nova",server="localhost:5432",state="i
 ``` toml
 # HELP og_static Version string as reported by postgres
 # TYPE og_static untyped
-og_static{server="localhost:5432",short_version="11.7.0",version="OpenGauss 11.7 (Debian 11.7-0+deb10u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit"} 1
+og_static{server="localhost:5432",short_version="2.0.0",version="OpenGauss 2.0 (Debian 2.0-0+deb10u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit"} 1
 # HELP og_up Whether the last scrape of metrics from OpenGauss was able to connect to the server (1 for yes, 0 for no).
 # TYPE og_up gauge
 og_up 1
