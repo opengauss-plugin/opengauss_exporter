@@ -21,6 +21,30 @@ Prometheus exporter for OpenGauss server metrics.
 
 NOTE: Not all collection methods are supported on OpenGauss < 2.0.1
 
+## 目录结构
+``` sh 
+.
+├── bin # 编译输出可执行程序
+│   ├── opengauss_exporter      # linux 64位
+│   ├── opengauss_exporter.exe  # windows 64位
+│   └── opengauss_exporter_mac  # macos 64位
+├── cli.go        # Module：控制台
+├── console.go    # Module：输出
+├── go.mod        # Go Module文件
+├── go.sum        # Go Module校验
+├── LICENSE       # 版权：GNU 3.0
+├── main.go       # 入口：主程序
+├── metrics.go    # 逻辑：各项metrics度量加载分析
+├── rest.go       # 输出：HTTP服务，用于挂载至Prometheus
+├── release.sh    # 打包：跨系统平台分发脚本
+├── README.md     # 项目说明文档
+└── showcase      # Grafana实际效果预览
+    ├── 1og.png
+    ├── 2og.png
+    ├── 3og.png
+    └── 4og.png
+```
+
 # 1. 编译与运行Building and running
 
 ## 1.1 必备权限 Required Grants
@@ -42,6 +66,14 @@ go build
 
 ## 1.3 运行 Running
 
+
+通过命令行参数运行：
+Running using console:
+``` sh
+./opengauss_exporter -dburi "postgresql://exporter:XXXXXXXX@localhost:5432/postgres?sslmode=disable"
+```
+
+
 通过系统环境变量运行:
 Running using an environment variable:
 
@@ -49,12 +81,6 @@ Running using an environment variable:
 export DATA_SOURCE_NAME="postgresql://exporter:XXXXXXXX@localhost:5432/postgres?sslmode=disable"
 
 ./opengauss_exporter
-```
-
-通过命令行参数运行：
-Running using console:
-``` sh
-./opengauss_exporter -dburi "postgresql://exporter:XXXXXXXX@localhost:5432/postgres?sslmode=disable"
 ```
 
 
