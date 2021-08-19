@@ -1,5 +1,15 @@
-# OpenGauss Server Exporter
+# 项目：OpenGauss Server Exporter
+## 命题赛道
+- 题目：提供Prometheus Exporter用于采集和监控openGauss服务的指标及数据
+- 仓库：https://github.com/opengauss-plugin/opengauss_exporter
+- 团队：
+    - (万时超), developer.
+    - [ryanemax](https://github.com/ryanemax)(刘雨飏), developer.
+    - [lyh2002](https://github.com/lyh2002)(刘宇航), developer.
+    - (陈若飞), developer.
 
+
+## 项目简介
 面向OpenGuass服务器的 Prometheus 监控采集器
 
 Prometheus exporter for OpenGauss server metrics.
@@ -68,16 +78,8 @@ Running using ~/.opengauss.cnf:
 ## 4.4 展示DashBoard
 ![4](http://106.12.254.207/og/4og.png)
 
-# 5.Contributor
 
-- [ryanemax](https://github.com/ryanemax)(刘雨飏), developer.
-- [lyh2002](https://github.com/lyh2002)(刘宇航), developer.
-- ***(万时超), developer.
-- ***(陈若飞), developer.
-
-
-
-# 附件：《采集器指标清单 Metrics Params》
+# 附件：《采集器Metrics度量汇总》
 ## (1) 应用级指标(重要)
 - 应用在运行时，语句性能的分析，用于作为优化SQL语句的参考数值
 
