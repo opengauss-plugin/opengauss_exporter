@@ -1,99 +1,73 @@
-# 项目：OpenGauss Server Exporter
-## 命题赛道
-- 题目：提供Prometheus Exporter用于采集和监控openGauss服务的指标及数据
-- 仓库：https://github.com/opengauss-plugin/opengauss_exporter
-- 团队：
-    - (万时超), developer.
-    - [ryanemax](https://github.com/ryanemax)(刘雨飏), developer.
-    - [lyh2002](https://github.com/lyh2002)(刘宇航), developer.
-    - (陈若飞), developer.
+package main
 
+import (
+	"fmt"
+	"log"
+	"net/http"
+	_ "net/http/pprof"
+)
 
-## 项目简介
-面向OpenGuass服务器的 Prometheus 监控采集器
+func RestApi(port string) {
 
-Prometheus exporter for OpenGauss server metrics.
+	// Enable Proff Debug
+	go func() {
+		http.HandleFunc("/", RouteHandler)
+		http.HandleFunc("/mertrics/", MetricsHandler)
+		log.Println(http.ListenAndServe(port, nil))
+	}()
 
-支持版本 Supported versions:
-* OpenGauss >= 2.0.1.
+	defer func() {
+		if err := recover(); err != nil {
+			Error("RestApi发生错误：", err)
+		}
+	}()
+}
 
-注意：并非所有的方法支持OpenGauss 2.0.1以下的版本
+func RouteHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/":
+		IndexHandler(w, r)
+		break
+	case "/metrics":
+		MetricsHandler(w, r)
+		break
+	default:
+		IndexHandler(w, r)
+	}
+}
 
-NOTE: Not all collection methods are supported on OpenGauss < 2.0.1
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, `
+	<html>
+	<head>
+	<title>OpenGauss Exporter for Prometheus by ryanemax</title>
+	</head>
+	<body>
+		<p>OpenGauss Exporter for Prometheus by ryanemax</p>
+		<p>Go to: <a href="/metrics">/metrics</a></p>
+	</body>
+	</html>
+	`)
+}
+func MetricsHandler(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			Error("获取Metrics发生错误", err)
+		}
+	}()
 
-# 1. 编译与运行Building and running
+	og_slow_select_count, _ := og_slow_select_count()
 
-## 1.1 必备权限 Required Grants
-
-```sql
-CREATE USER 'exporter'@'localhost' IDENTIFIED BY 'XXXXXXXX' WITH MAX_USER_CONNECTIONS 3;
-GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'exporter'@'localhost';
-```
-
-NOTE: It is recommended to set a max connection limit for the user to avoid overloading the server with monitoring scrapes under heavy load. This is not supported on all MySQL/MariaDB versions; for example, MariaDB 10.1 (provided with Ubuntu 18.04) [does _not_ support this feature](https://mariadb.com/kb/en/library/create-user/#resource-limit-options).
-
-## 1.2 编译 Build
-
-``` sh
-git clone https://github.com/opengauss_plugin/opengauss_exporter.git
-cd opengauss_exporter
-go build
-```
-
-## 1.3 运行 Running
-
-通过系统环境变量运行:
-Running using an environment variable:
-
-``` sh
-export DATA_SOURCE_NAME="postgresql://exporter:XXXXXXXX@localhost:5432/postgres?sslmode=disable"
-
-./opengauss_exporter
-```
-
-通过命令行参数运行：
-Running using console:
-``` sh
-./opengauss_exporter -dburi "postgresql://exporter:XXXXXXXX@localhost:5432/postgres?sslmode=disable"
-```
-
-
-# 3.TODOLIST
-- [x] (1) 应用级指标(重要) 预计时间：20210831
-- [ ] (2) 系统级指标 预计时间：20210907
-- [ ] (3) 数据库锁指标分析 预计时间：20210914
-- [ ] (4) 数据库活跃链接指标分析 预计时间：20210921
-- [ ] (5) 采集器设置参数分析 预计时间：20210928
-
-# 4.效果预览（Grafana仪表盘示例）
-## 4.1 添加DataSource
-![1](http://106.12.254.207/og/1og.png)
-
-## 4.2 查看DataSource
-![2](http://106.12.254.207/og/2og.png)
-
-## 4.3 创建DashBoard
-![3](http://106.12.254.207/og/3og.png)
-
-## 4.4 展示DashBoard
-![4](http://106.12.254.207/og/4og.png)
-
-
-# 附件：《采集器Metrics度量汇总》
-## (1) 应用级指标(重要)
-- 应用在运行时，语句性能的分析，用于作为优化SQL语句的参考数值
-
-``` toml
+	fmt.Fprintln(w, `
+#### (1) 应用级指标(重要)
+# - 应用在运行时，语句性能的分析，用于作为优化SQL语句的参考数值
 # 慢查询分析
-og_slow_select_count 2
-
+og_slow_select_count `+og_slow_select_count+`
 # 查询频数分析
 og_frequency_count 3
-```
 
-## (2) 系统级指标
-- CPU、内存、垃圾回收情况等系统运行指标
-``` toml
+#### (2) 系统级指标
+# - CPU、内存、垃圾回收情况等系统运行指标
 # HELP go_gc_duration_seconds A summary of the GC invocation durations.
 # TYPE go_gc_duration_seconds summary
 go_gc_duration_seconds{quantile="0"} 1.9007e-05
@@ -185,10 +159,7 @@ go_memstats_sys_bytes 7.176012e+07
 # TYPE go_threads gauge
 go_threads 7
 
-```
-## (3) 数据库锁指标分析
-
-``` toml
+# (3) 数据库锁指标分析
 # HELP og_exporter_last_scrape_duration_seconds Duration of the last scrape of metrics from OpenGauss.
 # TYPE og_exporter_last_scrape_duration_seconds gauge
 og_exporter_last_scrape_duration_seconds 0.018552361
@@ -208,11 +179,8 @@ og_locks_count{datname="nova",mode="rowsharelock",server="localhost:5432"} 0
 og_locks_count{datname="nova",mode="sharelock",server="localhost:5432"} 0
 og_locks_count{datname="nova",mode="sharerowexclusivelock",server="localhost:5432"} 0
 og_locks_count{datname="nova",mode="shareupdateexclusivelock",server="localhost:5432"} 0
-```
 
-## (4) 数据库活跃链接指标分析
-``` toml
-
+# (4) 数据库活跃链接指标分析
 # HELP og_stat_activity_count number of connections in this state
 # TYPE og_stat_activity_count gauge
 og_stat_activity_count{datname="nova",server="localhost:5432",state="active"} 0
@@ -230,13 +198,11 @@ og_stat_activity_max_tx_duration{datname="nova",server="localhost:5432",state="f
 og_stat_activity_max_tx_duration{datname="nova",server="localhost:5432",state="idle"} 0
 og_stat_activity_max_tx_duration{datname="nova",server="localhost:5432",state="idle in transaction"} 0
 og_stat_activity_max_tx_duration{datname="nova",server="localhost:5432",state="idle in transaction (aborted)"} 0
-```
 
-## (5)采集器设置参数分析
-``` toml
+# (5)采集器设置参数分析
 # HELP og_static Version string as reported by postgres
 # TYPE og_static untyped
-og_static{server="localhost:5432",short_version="2.0.1",version="OpenGauss 2.0 (Debian 2.0-0+deb10u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit"} 1
+og_static{server="localhost:5432",short_version="2.0.0",version="OpenGauss 2.0 (Debian 2.0-0+deb10u1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit"} 1
 # HELP og_up Whether the last scrape of metrics from OpenGauss was able to connect to the server (1 for yes, 0 for no).
 # TYPE og_up gauge
 og_up 1
@@ -272,11 +238,5 @@ promhttp_metric_handler_requests_in_flight 1
 promhttp_metric_handler_requests_total{code="200"} 427012
 promhttp_metric_handler_requests_total{code="500"} 1
 promhttp_metric_handler_requests_total{code="503"} 0
-
-```
-
-# Copyright
-
-http://www.futurestack.cn
-
-Copyright © 2022 RyaneMax. All Rights Reserved.
+	`)
+}
