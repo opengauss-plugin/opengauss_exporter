@@ -3,9 +3,10 @@
 - 题目：提供Prometheus Exporter用于采集和监控openGauss服务的指标及数据
 - 仓库：https://github.com/opengauss-plugin/opengauss_exporter
 - 团队：
-    - (万时超), developer.
+    - [fffyuki](https://github.com/fffyuki)(范云情), developer.
     - [ryanemax](https://github.com/ryanemax)(刘雨飏), developer.
     - [lyh2002](https://github.com/lyh2002)(刘宇航), developer.
+    - (万时超), developer.
     - (陈若飞), developer.
 
 
